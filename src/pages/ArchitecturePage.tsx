@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { 
   Server, Database, Monitor, Cpu, 
   GitBranch, Layers, Shield, Zap,
@@ -18,11 +17,7 @@ export default function ArchitecturePage() {
 
       <main className="max-w-7xl mx-auto p-6 space-y-8">
         {/* Схема архитектуры */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
-        >
+        <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h2 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
             <Layers className="w-5 h-5 text-green-500" />
             Общая архитектура
@@ -67,15 +62,10 @@ export default function ArchitecturePage() {
               <p className="text-xs text-gray-500 mt-2">Имитация работы «железа»</p>
             </div>
           </div>
-        </motion.section>
+        </section>
 
         {/* Схема БД */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
-        >
+        <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h2 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
             <Database className="w-5 h-5 text-green-500" />
             Схема базы данных (SQLAlchemy модели)
@@ -217,15 +207,10 @@ export default function ArchitecturePage() {
               </div>
             </div>
           </div>
-        </motion.section>
+        </section>
 
         {/* API Endpoints */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
-        >
+        <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h2 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
             <Zap className="w-5 h-5 text-green-500" />
             API Endpoints (FastAPI)
@@ -278,15 +263,10 @@ export default function ArchitecturePage() {
               </div>
             </div>
           </div>
-        </motion.section>
+        </section>
 
         {/* Структура проекта */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
-        >
+        <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h2 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
             <FileCode className="w-5 h-5 text-green-500" />
             Структура проекта
@@ -327,15 +307,10 @@ export default function ArchitecturePage() {
     ├── test_scan.py
     └── test_confirm.py`}</pre>
           </div>
-        </motion.section>
+        </section>
 
         {/* Docker Compose */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
-        >
+        <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h2 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
             <Box className="w-5 h-5 text-green-500" />
             Docker Compose конфигурация
@@ -375,17 +350,12 @@ services:
       - db
 
 volumes:
-  pgdata:`}</pre>
+  pgdata`}</pre>
           </div>
-        </motion.section>
+        </section>
 
         {/* Бизнес-процесс */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
-        >
+        <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h2 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
             <GitBranch className="w-5 h-5 text-green-500" />
             Бизнес-процесс работы фандомата
@@ -438,15 +408,10 @@ volumes:
               </div>
             </div>
           </div>
-        </motion.section>
+        </section>
 
         {/* Безопасность */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-          className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
-        >
+        <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
             <Shield className="w-5 h-5 text-green-500" />
             Обработка ошибок и безопасность
@@ -472,7 +437,7 @@ volumes:
               </ul>
             </div>
           </div>
-        </motion.section>
+        </section>
       </main>
     </div>
   );

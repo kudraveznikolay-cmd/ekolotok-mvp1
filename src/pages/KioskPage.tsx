@@ -1,5 +1,4 @@
-import { useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useCallback, useEffect } from 'react';
 import { QrCode, CheckCircle, XCircle, Loader2, RotateCcw, Package } from 'lucide-react';
 import { processScan, mockProducts } from '../store/mockData';
 
@@ -11,40 +10,62 @@ export default function KioskPage() {
   const [resultMessage, setResultMessage] = useState('');
   const [promoCode, setPromoCode] = useState('');
   const [productName, setProductName] = useState('');
+  const [isVisible, setIsVisible] = useState(true);
+
+  // Анимация появления
+  useEffect(() => {
+    setIsVisible(true);
+  }, [status]);
 
   const handleScan = useCallback(async (inputBarcode?: string) => {
     const codeToScan = inputBarcode || barcode;
     if (!codeToScan.trim()) return;
 
-    setStatus('scanning');
-    setResultMessage('Сканирование штрихкода...');
-    setPromoCode('');
-    setProductName('');
+    setIsVisible(false);
+    setTimeout(() => {
+      setStatus('scanning');
+      setResultMessage('Сканирование штрихкода...');
+      setPromoCode('');
+      setProductName('');
+      setIsVisible(true);
+    }, 150);
 
     try {
       const result = await processScan(codeToScan.trim());
 
-      if (result.success) {
-        setStatus('success');
-        setResultMessage(result.message);
-        setPromoCode(result.promoCode || '');
-        setProductName(result.product?.brand || '');
-      } else {
-        setStatus('error');
-        setResultMessage(result.message);
-      }
+      setIsVisible(false);
+      setTimeout(() => {
+        if (result.success) {
+          setStatus('success');
+          setResultMessage(result.message);
+          setPromoCode(result.promoCode || '');
+          setProductName(result.product?.brand || '');
+        } else {
+          setStatus('error');
+          setResultMessage(result.message);
+        }
+        setIsVisible(true);
+      }, 150);
     } catch {
-      setStatus('error');
-      setResultMessage('⚠️ Ошибка соединения с сервером. Попробуйте позже.');
+      setIsVisible(false);
+      setTimeout(() => {
+        setStatus('error');
+        setResultMessage('⚠️ Ошибка соединения с сервером. Попробуйте позже.');
+        setIsVisible(true);
+      }, 150);
     }
   }, [barcode]);
 
   const handleReset = () => {
-    setStatus('idle');
-    setBarcode('');
-    setResultMessage('');
-    setPromoCode('');
-    setProductName('');
+    setIsVisible(false);
+    setTimeout(() => {
+      setStatus('idle');
+      setBarcode('');
+      setResultMessage('');
+      setPromoCode('');
+      setProductName('');
+      setIsVisible(true);
+    }, 150);
   };
 
   return (
@@ -71,23 +92,13 @@ export default function KioskPage() {
       {/* Основной контент */}
       <main className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-lg">
-          <AnimatePresence mode="wait">
+          <div className={`transition-all duration-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
             {/* Экран ожидания */}
             {status === 'idle' && (
-              <motion.div
-                key="idle"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="bg-white rounded-3xl shadow-xl p-8 text-center"
-              >
-                <motion.div
-                  animate={{ scale: [1, 1.05, 1] }}
-                  transition={{ repeat: Infinity, duration: 2 }}
-                  className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center"
-                >
+              <div className="bg-white rounded-3xl shadow-xl p-8 text-center">
+                <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center animate-pulse">
                   <QrCode className="w-12 h-12 text-green-600" />
-                </motion.div>
+                </div>
                 
                 <h2 className="text-2xl font-bold text-gray-800 mb-2">
                   Сдайте яичную упаковку
@@ -136,25 +147,15 @@ export default function KioskPage() {
                     ))}
                   </div>
                 </div>
-              </motion.div>
+              </div>
             )}
 
             {/* Экран обработки */}
             {(status === 'scanning' || status === 'checking') && (
-              <motion.div
-                key="processing"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-white rounded-3xl shadow-xl p-8 text-center"
-              >
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ repeat: Infinity, duration: 1.5, ease: 'linear' }}
-                  className="w-20 h-20 mx-auto mb-6"
-                >
+              <div className="bg-white rounded-3xl shadow-xl p-8 text-center">
+                <div className="w-20 h-20 mx-auto mb-6 animate-spin">
                   <Loader2 className="w-20 h-20 text-green-500" />
-                </motion.div>
+                </div>
                 
                 <h2 className="text-xl font-bold text-gray-800 mb-2">
                   {status === 'scanning' ? 'Сканирование...' : 'Проверка датчиками...'}
@@ -167,33 +168,20 @@ export default function KioskPage() {
                 
                 {/* Прогресс-бар */}
                 <div className="mt-6 h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <motion.div
-                    className="h-full bg-gradient-to-r from-green-400 to-emerald-500 rounded-full"
-                    initial={{ width: '0%' }}
-                    animate={{ width: status === 'scanning' ? '40%' : '80%' }}
-                    transition={{ duration: 1 }}
+                  <div 
+                    className="h-full bg-gradient-to-r from-green-400 to-emerald-500 rounded-full transition-all duration-1000"
+                    style={{ width: status === 'scanning' ? '40%' : '80%' }}
                   />
                 </div>
-              </motion.div>
+              </div>
             )}
 
             {/* Экран успеха */}
             {status === 'success' && (
-              <motion.div
-                key="success"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="bg-white rounded-3xl shadow-xl p-8 text-center"
-              >
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', delay: 0.2 }}
-                  className="w-20 h-20 mx-auto mb-6 bg-green-100 rounded-full flex items-center justify-center"
-                >
+              <div className="bg-white rounded-3xl shadow-xl p-8 text-center">
+                <div className="w-20 h-20 mx-auto mb-6 bg-green-100 rounded-full flex items-center justify-center animate-bounce">
                   <CheckCircle className="w-12 h-12 text-green-600" />
-                </motion.div>
+                </div>
                 
                 <h2 className="text-2xl font-bold text-gray-800 mb-2">
                   Спасибо за переработку!
@@ -202,12 +190,7 @@ export default function KioskPage() {
                 
                 {/* Промокод */}
                 {promoCode && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 }}
-                    className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-6 mb-6"
-                  >
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-6 mb-6 animate-pulse">
                     <p className="text-sm text-green-600 mb-2">Ваш промокод на скидку 5%:</p>
                     <p className="text-3xl font-mono font-bold text-green-800 tracking-wider">
                       {promoCode}
@@ -215,7 +198,7 @@ export default function KioskPage() {
                     <p className="text-xs text-green-500 mt-2">
                       Действителен в магазинах-партнёрах
                     </p>
-                  </motion.div>
+                  </div>
                 )}
                 
                 <button
@@ -225,26 +208,15 @@ export default function KioskPage() {
                   <RotateCcw className="w-5 h-5 inline mr-2" />
                   Сдать ещё
                 </button>
-              </motion.div>
+              </div>
             )}
 
             {/* Экран ошибки */}
             {status === 'error' && (
-              <motion.div
-                key="error"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="bg-white rounded-3xl shadow-xl p-8 text-center"
-              >
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', delay: 0.2 }}
-                  className="w-20 h-20 mx-auto mb-6 bg-red-100 rounded-full flex items-center justify-center"
-                >
+              <div className="bg-white rounded-3xl shadow-xl p-8 text-center">
+                <div className="w-20 h-20 mx-auto mb-6 bg-red-100 rounded-full flex items-center justify-center">
                   <XCircle className="w-12 h-12 text-red-500" />
-                </motion.div>
+                </div>
                 
                 <h2 className="text-2xl font-bold text-gray-800 mb-2">
                   Не удалось принять
@@ -266,9 +238,9 @@ export default function KioskPage() {
                     Вернуться на главный экран
                   </button>
                 </div>
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
+          </div>
         </div>
       </main>
 

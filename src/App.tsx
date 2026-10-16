@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Monitor, BarChart3, Layers, Menu, X } from 'lucide-react';
 import KioskPage from './pages/KioskPage';
 import AdminPage from './pages/AdminPage';
@@ -77,57 +76,42 @@ export default function App() {
         </div>
 
         {/* Mobile Navigation */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="md:hidden border-t border-gray-100 overflow-hidden"
-            >
-              <div className="p-2 space-y-1">
-                {navItems.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = currentPage === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => {
-                        setCurrentPage(item.id);
-                        setMobileMenuOpen(false);
-                      }}
-                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all ${
-                        isActive
-                          ? 'bg-green-100 text-green-700'
-                          : 'text-gray-600 hover:bg-gray-50'
-                      }`}
-                    >
-                      <Icon className="w-5 h-5" />
-                      <div>
-                        <p className="font-medium text-sm">{item.label}</p>
-                        <p className="text-xs text-gray-400">{item.description}</p>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-gray-100">
+            <div className="p-2 space-y-1">
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = currentPage === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      setCurrentPage(item.id);
+                      setMobileMenuOpen(false);
+                    }}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all ${
+                      isActive
+                        ? 'bg-green-100 text-green-700'
+                        : 'text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <div>
+                      <p className="font-medium text-sm">{item.label}</p>
+                      <p className="text-xs text-gray-400">{item.description}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Контент страницы */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={currentPage}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.2 }}
-        >
-          {renderPage()}
-        </motion.div>
-      </AnimatePresence>
+      <div className="animate-fadeIn">
+        {renderPage()}
+      </div>
     </div>
   );
 }

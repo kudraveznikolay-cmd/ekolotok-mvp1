@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { motion } from 'framer-motion';
 import { 
   BarChart3, Package, QrCode, TrendingUp, 
   AlertTriangle, CheckCircle2, MapPin, 
@@ -56,12 +55,7 @@ export default function AdminPage() {
       <main className="max-w-7xl mx-auto p-6 space-y-6">
         {/* KPI Карточки */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="bg-white rounded-xl shadow-sm border border-gray-100 p-5"
-          >
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500">Всего транзакций</p>
@@ -74,17 +68,12 @@ export default function AdminPage() {
             <p className="text-xs text-green-600 mt-2 flex items-center gap-1">
               <TrendingUp className="w-3 h-3" /> +12% за неделю
             </p>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-white rounded-xl shadow-sm border border-gray-100 p-5"
-          >
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500">Принято упаковки</p>
+                <p className="text-sm text-gray-500">Принято упаковок</p>
                 <p className="text-3xl font-bold text-gray-800">{stats.successfulTransactions}</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
@@ -94,14 +83,9 @@ export default function AdminPage() {
             <p className="text-xs text-gray-500 mt-2">
               {((stats.successfulTransactions / stats.totalTransactions) * 100).toFixed(0)}% успешных
             </p>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="bg-white rounded-xl shadow-sm border border-gray-100 p-5"
-          >
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500">Промокодов выдано</p>
@@ -114,14 +98,9 @@ export default function AdminPage() {
             <p className="text-xs text-gray-500 mt-2">
               {stats.usedPromoCodes} использовано
             </p>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="bg-white rounded-xl shadow-sm border border-gray-100 p-5"
-          >
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500">Общий вес сырья</p>
@@ -134,18 +113,13 @@ export default function AdminPage() {
             <p className="text-xs text-green-600 mt-2 flex items-center gap-1">
               <TrendingUp className="w-3 h-3" /> Экология: +{stats.successfulTransactions} лотков спасено
             </p>
-          </motion.div>
+          </div>
         </div>
 
         {/* Графики */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Столбчатая диаграмма транзакций */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6"
-          >
+          <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
               <Activity className="w-5 h-5 text-green-500" />
               Транзакции за последние дни
@@ -162,15 +136,10 @@ export default function AdminPage() {
                 <Bar dataKey="count" fill="#10b981" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
-          </motion.div>
+          </div>
 
           {/* Pie-диаграмма */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
-          >
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
               <BarChart3 className="w-5 h-5 text-green-500" />
               Статус транзакций
@@ -201,16 +170,11 @@ export default function AdminPage() {
                 </div>
               ))}
             </div>
-          </motion.div>
+          </div>
         </div>
 
         {/* Статус автоматов */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-          className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
-        >
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
             <MapPin className="w-5 h-5 text-green-500" />
             Статус автоматов
@@ -254,15 +218,10 @@ export default function AdminPage() {
               </div>
             ))}
           </div>
-        </motion.div>
+        </div>
 
         {/* Последние транзакции */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
-        >
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
             <Clock className="w-5 h-5 text-green-500" />
             Последние транзакции
@@ -306,7 +265,7 @@ export default function AdminPage() {
                             Успех
                           </span>
                         ) : tx.status === 'rejected' ? (
-                          <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs rounded-full flex items-center gap-1 w-fit">
+                          <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs rounded-full inline-flex items-center gap-1">
                             <AlertTriangle className="w-3 h-3" /> Отказ
                           </span>
                         ) : (
@@ -330,15 +289,10 @@ export default function AdminPage() {
               </tbody>
             </table>
           </div>
-        </motion.div>
+        </div>
 
         {/* Материалы */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9 }}
-          className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
-        >
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
             <Recycle className="w-5 h-5 text-green-500" />
             Распределение по материалам
@@ -363,7 +317,7 @@ export default function AdminPage() {
               </div>
             ))}
           </div>
-        </motion.div>
+        </div>
       </main>
     </div>
   );
