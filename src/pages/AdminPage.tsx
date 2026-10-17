@@ -10,7 +10,6 @@ import { getAdminStats, mockProducts } from '../store/mockData';
 
 function SimpleBarChart({ data }: { data: { date: string; count: number; weight: number }[] }) {
   const maxCount = Math.max(...data.map(d => d.count), 1);
-  const barWidth = 100 / data.length;
   
   return (
     <div className="w-full h-64 relative">
@@ -24,17 +23,17 @@ function SimpleBarChart({ data }: { data: { date: string; count: number; weight:
       {/* Chart area */}
       <div className="ml-10 h-full pb-8 flex items-end gap-1">
         {data.map((item, i) => {
-          const height = (item.count / maxCount) * 100;
+          const heightPercent = (item.count / maxCount) * 100;
           return (
-            <div key={i} className="flex-1 flex flex-col items-center gap-1 group">
+            <div key={i} className="flex-1 flex flex-col items-center justify-end h-full relative group">
               {/* Tooltip */}
-              <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-gray-800 text-white text-xs px-2 py-1 rounded absolute -top-8 pointer-events-none">
+              <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-gray-800 text-white text-xs px-2 py-1 rounded absolute -top-8 pointer-events-none z-10">
                 {item.count} шт.
               </div>
               {/* Bar */}
               <div 
-                className="w-full bg-gradient-to-t from-green-500 to-emerald-400 rounded-t-md transition-all hover:from-green-600 hover:to-emerald-500 relative"
-                style={{ height: `${height}%`, minHeight: item.count > 0 ? '4px' : '0px' }}
+                className="w-full bg-gradient-to-t from-green-500 to-emerald-400 rounded-t-md transition-all hover:from-green-600 hover:to-emerald-500"
+                style={{ height: `${heightPercent}%`, minHeight: item.count > 0 ? '4px' : '0px' }}
               />
               {/* Label */}
               <span className="text-xs text-gray-500 mt-1">{item.date}</span>
@@ -48,6 +47,13 @@ function SimpleBarChart({ data }: { data: { date: string; count: number; weight:
 
 function SimplePieChart({ data, colors }: { data: { name: string; value: number }[]; colors: string[] }) {
   const total = data.reduce((sum, d) => sum + d.value, 0);
+  if (total === 0) {
+    return (
+      <div className="flex items-center justify-center h-48">
+        <p className="text-gray-400 text-sm">Нет данных</p>
+      </div>
+    );
+  }
   let cumulative = 0;
   
   const segments = data.map((item, i) => {
@@ -90,8 +96,9 @@ function SimplePieChart({ data, colors }: { data: { name: string; value: number 
 
 function SimpleLineChart({ data }: { data: { date: string; count: number; weight: number }[] }) {
   const maxWeight = Math.max(...data.map(d => d.weight), 1);
+  const divisor = Math.max(data.length - 1, 1);
   const points = data.map((item, i) => {
-    const x = (i / (data.length - 1)) * 100;
+    const x = data.length === 1 ? 50 : (i / divisor) * 100;
     const y = 100 - (item.weight / maxWeight) * 80 - 10;
     return { x, y, ...item };
   });

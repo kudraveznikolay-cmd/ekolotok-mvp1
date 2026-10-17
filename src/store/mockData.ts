@@ -59,25 +59,42 @@ export const mockMachines: Machine[] = [
   { id: 'm4', location: 'ТЦ "Корона", Гомель', status: 'online', currentFillLevel: 15, lastHeartbeat: new Date() },
 ];
 
+// Распределяем транзакции по последним 7 дням для корректного отображения графиков
+const DAY = 86400000; // миллисекунд в сутках
+const now = Date.now();
+
 export const mockTransactions: Transaction[] = [
-  { id: 't1', machineId: 'm1', barcode: '4810000123456', weight: 85, timestamp: new Date(Date.now() - 86400000), status: 'success', promoCodeId: 'p1' },
-  { id: 't2', machineId: 'm1', barcode: '4810000234567', weight: 92, timestamp: new Date(Date.now() - 72000000), status: 'success', promoCodeId: 'p2' },
-  { id: 't3', machineId: 'm2', barcode: '4810000345678', weight: 45, timestamp: new Date(Date.now() - 50000000), status: 'success', promoCodeId: 'p3' },
-  { id: 't4', machineId: 'm2', barcode: '9999999999999', weight: 0, timestamp: new Date(Date.now() - 40000000), status: 'rejected' },
-  { id: 't5', machineId: 'm1', barcode: '4810000456789', weight: 78, timestamp: new Date(Date.now() - 30000000), status: 'success', promoCodeId: 'p4' },
-  { id: 't6', machineId: 'm4', barcode: '4810000567890', weight: 55, timestamp: new Date(Date.now() - 20000000), status: 'success', promoCodeId: 'p5' },
-  { id: 't7', machineId: 'm2', barcode: '4810000678901', weight: 110, timestamp: new Date(Date.now() - 10000000), status: 'success', promoCodeId: 'p6' },
-  { id: 't8', machineId: 'm4', barcode: '4810000789012', weight: 67, timestamp: new Date(Date.now() - 5000000), status: 'success', promoCodeId: 'p7' },
+  // 6 дней назад
+  { id: 't1', machineId: 'm1', barcode: '4810000123456', weight: 85, timestamp: new Date(now - 6 * DAY + 3600000 * 10), status: 'success', promoCodeId: 'p1' },
+  // 5 дней назад
+  { id: 't2', machineId: 'm1', barcode: '4810000234567', weight: 92, timestamp: new Date(now - 5 * DAY + 3600000 * 14), status: 'success', promoCodeId: 'p2' },
+  { id: 't3', machineId: 'm2', barcode: '4810000345678', weight: 45, timestamp: new Date(now - 5 * DAY + 3600000 * 16), status: 'success', promoCodeId: 'p3' },
+  // 4 дня назад
+  { id: 't4', machineId: 'm2', barcode: '9999999999999', weight: 0, timestamp: new Date(now - 4 * DAY + 3600000 * 11), status: 'rejected' },
+  // 3 дня назад
+  { id: 't5', machineId: 'm1', barcode: '4810000456789', weight: 78, timestamp: new Date(now - 3 * DAY + 3600000 * 9), status: 'success', promoCodeId: 'p4' },
+  { id: 't6', machineId: 'm4', barcode: '4810000567890', weight: 55, timestamp: new Date(now - 3 * DAY + 3600000 * 15), status: 'success', promoCodeId: 'p5' },
+  // 2 дня назад
+  { id: 't7', machineId: 'm2', barcode: '4810000678901', weight: 110, timestamp: new Date(now - 2 * DAY + 3600000 * 12), status: 'success', promoCodeId: 'p6' },
+  // Вчера
+  { id: 't8', machineId: 'm4', barcode: '4810000789012', weight: 67, timestamp: new Date(now - 1 * DAY + 3600000 * 10), status: 'success', promoCodeId: 'p7' },
+  { id: 't9', machineId: 'm1', barcode: '4810000123456', weight: 95, timestamp: new Date(now - 1 * DAY + 3600000 * 14), status: 'success', promoCodeId: 'p8' },
+  // Сегодня
+  { id: 't10', machineId: 'm2', barcode: '4810000234567', weight: 88, timestamp: new Date(now - 3600000 * 5), status: 'success', promoCodeId: 'p9' },
+  { id: 't11', machineId: 'm4', barcode: '4810000345678', weight: 72, timestamp: new Date(now - 3600000 * 2), status: 'success', promoCodeId: 'p10' },
 ];
 
 export const mockPromoCodes: PromoCode[] = [
-  { id: 'p1', code: 'ECO-X7K2M9', discountPercent: 5, isUsed: true, createdAt: new Date(Date.now() - 86400000) },
-  { id: 'p2', code: 'ECO-R3N8P1', discountPercent: 5, isUsed: false, createdAt: new Date(Date.now() - 72000000) },
-  { id: 'p3', code: 'ECO-W5J4L6', discountPercent: 5, isUsed: true, createdAt: new Date(Date.now() - 50000000) },
-  { id: 'p4', code: 'ECO-T9B2Q7', discountPercent: 5, isUsed: false, createdAt: new Date(Date.now() - 30000000) },
-  { id: 'p5', code: 'ECO-Y1F6H3', discountPercent: 5, isUsed: false, createdAt: new Date(Date.now() - 20000000) },
-  { id: 'p6', code: 'ECO-A8D5G0', discountPercent: 5, isUsed: true, createdAt: new Date(Date.now() - 10000000) },
-  { id: 'p7', code: 'ECO-C4E7K2', discountPercent: 5, isUsed: false, createdAt: new Date(Date.now() - 5000000) },
+  { id: 'p1', code: 'ECO-X7K2M9', discountPercent: 5, isUsed: true, createdAt: new Date(now - 6 * DAY) },
+  { id: 'p2', code: 'ECO-R3N8P1', discountPercent: 5, isUsed: false, createdAt: new Date(now - 5 * DAY) },
+  { id: 'p3', code: 'ECO-W5J4L6', discountPercent: 5, isUsed: true, createdAt: new Date(now - 5 * DAY) },
+  { id: 'p4', code: 'ECO-T9B2Q7', discountPercent: 5, isUsed: false, createdAt: new Date(now - 3 * DAY) },
+  { id: 'p5', code: 'ECO-Y1F6H3', discountPercent: 5, isUsed: false, createdAt: new Date(now - 3 * DAY) },
+  { id: 'p6', code: 'ECO-A8D5G0', discountPercent: 5, isUsed: true, createdAt: new Date(now - 2 * DAY) },
+  { id: 'p7', code: 'ECO-C4E7K2', discountPercent: 5, isUsed: false, createdAt: new Date(now - 1 * DAY) },
+  { id: 'p8', code: 'ECO-D6F9L3', discountPercent: 5, isUsed: true, createdAt: new Date(now - 1 * DAY) },
+  { id: 'p9', code: 'ECO-E2G5H8', discountPercent: 5, isUsed: false, createdAt: new Date(now) },
+  { id: 'p10', code: 'ECO-F1J7M4', discountPercent: 5, isUsed: false, createdAt: new Date(now) },
 ];
 
 // ====== БИЗНЕС-ЛОГИКА (имитация Backend API) ======
@@ -185,12 +202,14 @@ export function getAdminStats() {
   const dailyStats = Array.from({ length: 7 }, (_, i) => {
     const date = new Date();
     date.setDate(date.getDate() - (6 - i));
-    const dayStart = new Date(date.setHours(0, 0, 0, 0));
-    const dayEnd = new Date(date.setHours(23, 59, 59, 999));
+    // Создаём начало и конец дня без мутации объекта
+    const dayStart = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
+    const dayEnd = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999);
     
-    const dayTransactions = mockTransactions.filter(t => 
-      t.timestamp >= dayStart && t.timestamp <= dayEnd
-    );
+    const dayTransactions = mockTransactions.filter(t => {
+      const tTime = t.timestamp.getTime();
+      return tTime >= dayStart.getTime() && tTime <= dayEnd.getTime();
+    });
     
     return {
       date: dayStart.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric' }),
