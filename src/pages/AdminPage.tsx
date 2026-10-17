@@ -4,14 +4,127 @@ import {
   AlertTriangle, CheckCircle2, MapPin, 
   Activity, Recycle, Clock
 } from 'lucide-react';
-import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, 
-  Tooltip, ResponsiveContainer, PieChart, Pie, Cell,
-  LineChart, Line
-} from 'recharts';
 import { getAdminStats, mockProducts } from '../store/mockData';
 
-const COLORS = ['#10b981', '#f59e0b', '#ef4444', '#6366f1'];
+// ====== Компонент SVG-графика (замена Recharts) ======
+
+function SimpleBarChart({ data }: { data: { date: string; count: number; weight: number }[] }) {
+  const maxCount = Math.max(...data.map(d => d.count), 1);
+  const barWidth = 100 / data.length;
+  
+  return (
+    <div className="w-full h-64 relative">
+      {/* Y-axis labels */}
+      <div className="absolute left-0 top-0 bottom-8 w-8 flex flex-col justify-between text-xs text-gray-400">
+        <span>{maxCount}</span>
+        <span>{Math.round(maxCount / 2)}</span>
+        <span>0</span>
+      </div>
+      
+      {/* Chart area */}
+      <div className="ml-10 h-full pb-8 flex items-end gap-1">
+        {data.map((item, i) => {
+          const height = (item.count / maxCount) * 100;
+          return (
+            <div key={i} className="flex-1 flex flex-col items-center gap-1 group">
+              {/* Tooltip */}
+              <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-gray-800 text-white text-xs px-2 py-1 rounded absolute -top-8 pointer-events-none">
+                {item.count} шт.
+              </div>
+              {/* Bar */}
+              <div 
+                className="w-full bg-gradient-to-t from-green-500 to-emerald-400 rounded-t-md transition-all hover:from-green-600 hover:to-emerald-500 relative"
+                style={{ height: `${height}%`, minHeight: item.count > 0 ? '4px' : '0px' }}
+              />
+              {/* Label */}
+              <span className="text-xs text-gray-500 mt-1">{item.date}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function SimplePieChart({ data, colors }: { data: { name: string; value: number }[]; colors: string[] }) {
+  const total = data.reduce((sum, d) => sum + d.value, 0);
+  let cumulative = 0;
+  
+  const segments = data.map((item, i) => {
+    const startAngle = (cumulative / total) * 360;
+    cumulative += item.value;
+    const endAngle = (cumulative / total) * 360;
+    
+    const startRad = ((startAngle - 90) * Math.PI) / 180;
+    const endRad = ((endAngle - 90) * Math.PI) / 180;
+    
+    const x1 = 50 + 40 * Math.cos(startRad);
+    const y1 = 50 + 40 * Math.sin(startRad);
+    const x2 = 50 + 40 * Math.cos(endRad);
+    const y2 = 50 + 40 * Math.sin(endRad);
+    
+    const largeArc = endAngle - startAngle > 180 ? 1 : 0;
+    
+    const path = `M 50 50 L ${x1} ${y1} A 40 40 0 ${largeArc} 1 ${x2} ${y2} Z`;
+    
+    return { path, color: colors[i], name: item.name, value: item.value };
+  });
+  
+  return (
+    <div className="flex items-center justify-center">
+      <svg viewBox="0 0 100 100" className="w-48 h-48">
+        {segments.map((seg, i) => (
+          <path 
+            key={i} 
+            d={seg.path} 
+            fill={seg.color} 
+            className="hover:opacity-80 transition-opacity cursor-pointer"
+          />
+        ))}
+        {/* Inner circle for donut effect */}
+        <circle cx="50" cy="50" r="22" fill="white" />
+      </svg>
+    </div>
+  );
+}
+
+function SimpleLineChart({ data }: { data: { date: string; count: number; weight: number }[] }) {
+  const maxWeight = Math.max(...data.map(d => d.weight), 1);
+  const points = data.map((item, i) => {
+    const x = (i / (data.length - 1)) * 100;
+    const y = 100 - (item.weight / maxWeight) * 80 - 10;
+    return { x, y, ...item };
+  });
+  
+  const pathD = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+  
+  return (
+    <div className="w-full h-48 relative">
+      <svg viewBox="0 0 100 100" className="w-full h-full" preserveAspectRatio="none">
+        {/* Grid lines */}
+        <line x1="0" y1="25" x2="100" y2="25" stroke="#f0f0f0" strokeWidth="0.3" />
+        <line x1="0" y1="50" x2="100" y2="50" stroke="#f0f0f0" strokeWidth="0.3" />
+        <line x1="0" y1="75" x2="100" y2="75" stroke="#f0f0f0" strokeWidth="0.3" />
+        
+        {/* Line */}
+        <path d={pathD} fill="none" stroke="#10b981" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        
+        {/* Dots */}
+        {points.map((p, i) => (
+          <circle key={i} cx={p.x} cy={p.y} r="1.5" fill="#10b981" className="hover:r-2 transition-all" />
+        ))}
+      </svg>
+      {/* X-axis labels */}
+      <div className="flex justify-between mt-1 px-1">
+        {data.map((item, i) => (
+          <span key={i} className="text-xs text-gray-400">{item.date}</span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ====== Основная страница ======
 
 export default function AdminPage() {
   const stats = useMemo(() => getAdminStats(), []);
@@ -20,6 +133,8 @@ export default function AdminPage() {
     { name: 'Успешные', value: stats.successfulTransactions },
     { name: 'Отклонённые', value: stats.rejectedTransactions },
   ];
+
+  const pieColors = ['#10b981', '#ef4444'];
 
   const materialStats = useMemo(() => {
     const cardboard = mockProducts.filter(p => p.materialType === 'cardboard').length;
@@ -81,7 +196,7 @@ export default function AdminPage() {
               </div>
             </div>
             <p className="text-xs text-gray-500 mt-2">
-              {((stats.successfulTransactions / stats.totalTransactions) * 100).toFixed(0)}% успешных
+              {stats.totalTransactions > 0 ? ((stats.successfulTransactions / stats.totalTransactions) * 100).toFixed(0) : 0}% успешных
             </p>
           </div>
 
@@ -118,24 +233,13 @@ export default function AdminPage() {
 
         {/* Графики */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Столбчатая диаграмма транзакций */}
+          {/* Столбчатая диаграмма */}
           <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
               <Activity className="w-5 h-5 text-green-500" />
               Транзакции за последние дни
             </h3>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={stats.dailyStats}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip 
-                  contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb' }}
-                  formatter={(value: number) => [`${value} шт.`, 'Транзакции']}
-                />
-                <Bar dataKey="count" fill="#10b981" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            <SimpleBarChart data={stats.dailyStats} />
           </div>
 
           {/* Pie-диаграмма */}
@@ -144,28 +248,11 @@ export default function AdminPage() {
               <BarChart3 className="w-5 h-5 text-green-500" />
               Статус транзакций
             </h3>
-            <ResponsiveContainer width="100%" height={200}>
-              <PieChart>
-                <Pie
-                  data={pieData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={50}
-                  outerRadius={80}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {pieData.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="flex justify-center gap-4 mt-2">
+            <SimplePieChart data={pieData} colors={pieColors} />
+            <div className="flex justify-center gap-4 mt-4">
               {pieData.map((entry, i) => (
                 <div key={entry.name} className="flex items-center gap-1.5 text-xs">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[i] }} />
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: pieColors[i] }} />
                   <span className="text-gray-600">{entry.name}: {entry.value}</span>
                 </div>
               ))}
@@ -291,24 +378,13 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Материалы */}
+        {/* Линейный график по весу */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
             <Recycle className="w-5 h-5 text-green-500" />
-            Распределение по материалам
+            Динамика веса принятого сырья
           </h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={stats.dailyStats}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-              <YAxis tick={{ fontSize: 12 }} />
-              <Tooltip 
-                contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb' }}
-                formatter={(value: number) => [`${value}г`, 'Вес']}
-              />
-              <Line type="monotone" dataKey="weight" stroke="#10b981" strokeWidth={2} dot={{ fill: '#10b981' }} />
-            </LineChart>
-          </ResponsiveContainer>
+          <SimpleLineChart data={stats.dailyStats} />
           <div className="flex gap-6 mt-4 justify-center">
             {materialStats.map((item) => (
               <div key={item.name} className="flex items-center gap-2">
