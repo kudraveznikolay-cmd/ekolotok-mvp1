@@ -8,7 +8,13 @@ import { getAdminStats, mockProducts } from '../store/mockData';
 
 // ====== Компонент SVG-графика (замена Recharts) ======
 
-function SimpleBarChart({ data }: { data: { date: string; count: number; weight: number }[] }) {
+interface DailyStat {
+  date: string;
+  count: number;
+  weight: number;
+}
+
+function SimpleBarChart({ data }: { data: DailyStat[] }) {
   const maxCount = Math.max(...data.map(d => d.count), 1);
   
   return (
@@ -94,7 +100,7 @@ function SimplePieChart({ data, colors }: { data: { name: string; value: number 
   );
 }
 
-function SimpleLineChart({ data }: { data: { date: string; count: number; weight: number }[] }) {
+function SimpleLineChart({ data }: { data: DailyStat[] }) {
   const maxWeight = Math.max(...data.map(d => d.weight), 1);
   const divisor = Math.max(data.length - 1, 1);
   const points = data.map((item, i) => {
